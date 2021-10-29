@@ -40,6 +40,13 @@ async function run() {
             res.send(result);
         });
 
+        app.get('/hotels/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await hotelCollection.findOne(query);
+            res.send(result);
+        })
+
 
         // USER API
 
@@ -54,6 +61,8 @@ async function run() {
             const result = await cursors.toArray();
             res.send(result);
         });
+
+
 
         app.get('/users/:id', async (req, res) => {
             const id = req.params.id;
