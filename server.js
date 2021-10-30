@@ -15,7 +15,7 @@ app.use(express.json());
 // ctcOevmHfQom8ceE
 // hotelbook
 
-const uri = "mongodb+srv://hotelbook:ctcOevmHfQom8ceE@cluster0.9z7i3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.9z7i3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
@@ -25,14 +25,15 @@ async function run() {
         const database = client.db("HotelDB");
         const hotelCollection = database.collection("hotels");
         const userCollection = database.collection("users");
-        // Post API
+        const orderCollection = database.collection("orders");
+
+        // HOTELS DATA
+
         app.post('/hotels', async (req, res) => {
             const hotels = req.body;
             const result = await hotelCollection.insertOne(hotels);
             res.send(hotels);
         });
-
-        // FIND
 
         app.get('/hotels', async (req, res) => {
             const cursors = hotelCollection.find({});
@@ -45,7 +46,7 @@ async function run() {
             const query = { _id: ObjectId(id) }
             const result = await hotelCollection.findOne(query);
             res.send(result);
-        })
+        });
 
 
         // USER API
@@ -55,6 +56,8 @@ async function run() {
             const result = await userCollection.insertOne(users);
             res.send(result);
         });
+
+        // ALL USERS DATA
 
         app.get('/users', async (req, res) => {
             const cursors = userCollection.find({});
@@ -69,21 +72,41 @@ async function run() {
             const query = { _id: ObjectId(id) }
             const result = await userCollection.findOne(query);
             res.send(result);
-        })
+        });
 
         app.delete('/users/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const result = await userCollection.deleteOne(query);
             res.json(result)
-        })
+        });
 
+        // ALL ORDERS DATA
+
+        // app.post('/orders', async (req, res) => {
+        //     const orders = req.body;
+        //     const reuslt = await userCollection.insertOne(orders)
+        //     res.json(result);
+        // })
+
+        app.get('/orders', async (req, res) => {
+            const cursors = userCollection.find({});
+            const result = await cursors.toArray();
+            res.send(result)
+        });
+
+        app.get('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _Id: ObjectId(id) }
+            const result = await userCollection.findOne(query);
+            res.send(result);
+        })
 
 
 
         app.listen(port, () => {
             console.log('run with', port)
-        })
+        });
 
 
     } finally {
