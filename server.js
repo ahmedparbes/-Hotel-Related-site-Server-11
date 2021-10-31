@@ -75,21 +75,20 @@ async function run() {
         });
 
 
+        //UPDATE API
         app.put('/users/:id', async (req, res) => {
             const id = req.params.id;
+            const updatedUser = req.body;
             const filter = { _id: ObjectId(id) };
-            const product = req.body;
+            const options = { upsert: true };
             const updateDoc = {
                 $set: {
-                    status: product.status,
-                    note: product.note
+                    status: updatedUser.name,
+                    note: updatedUser.note
                 },
             };
-
-            const result = await userCollection.updateOne(filter, updateDoc);
-            res.json(result);
-
-
+            const result = await userCollection.updateOne(filter, updateDoc, options)
+            res.json(result)
         })
 
 
